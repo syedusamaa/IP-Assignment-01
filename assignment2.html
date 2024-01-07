@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Country Details</title>
+    <!-- Include Bootstrap CSS -->
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" rel="stylesheet">
+</head>
+
+<body class="d-flex align-items-center justify-content-center" style="height: 100vh;">
+
+    <div class="container">
+    <h2 class="text-center">Select Country</h2>
+        <div class="form-group">
+            <label for="countrySelect">Select Country:</label>
+            <select class="form-control form-control-sm" id="countrySelect"></select>
+        </div>
+        <button class="btn btn-primary" onclick="showCountryDetails()">Show Details</button>
+
+        <h2 class="mt-5 text-center">Country Details</h2>
+
+        <!-- Bootstrap Card for displaying country details -->
+        <div class="card mx-auto" style="width: 18rem;">
+            <img id="flag" class="card-img-top" >
+            <div class="card-body" id="countryDetails">
+            </div>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/whatwg-fetch@3.6.2/dist/fetch.umd.js"></script>
+
+    <script>
+        // Fetch countries data and populate the dropdown
+        fetch('https://restcountries.com/v3.1/independent?status=true')
+            .then(response => response.json())
+            .then(data => {
+                const countrySelect = document.getElementById('countrySelect');
+                data.forEach(country => {
+                    const option = document.createElement('option');
+                    option.value = country.name.common;
+                    option.textContent = country.name.common;
+                    countrySelect.appendChild(option);
+                });
+            });
+
+        // Function to show country details
+        function showCountryDetails() {
+            const selectedCountry = document.getElementById('countrySelect').value;
+            const countryDetailsContainer = document.getElementById('countryDetails');
+            const flagImage = document.getElementById('flag');
+
+            // Fetch details for the selected country
+            fetch(`https://restcountries.com/v3.1/name/${selectedCountry}`)
+                .then(response => response.json())
+                .then(data => {
+                    const countryDetails = data[0];
+
+                    // Update the DOM with country details
+                    flagImage.src = countryDetails.flags.png;
+                    countryDetailsContainer.innerHTML = `
+                        <p class="card-text">Common Name: ${countryDetails.name.common}</p>
+                        <p class="card-text">Official Name: ${countryDetails.name.official}</p>
+                        <p class="card-text">Capital: ${countryDetails.capital}</p>
+                        <p class="card-text">Population: ${countryDetails.population}</p>
+                        <p class="card-text">Region: ${countryDetails.region}</p>
+                        <p class="card-text">Area: ${countryDetails.area}</p>
+                    `;
+                });
+        }
+    </script>
+
+</body>
+
+</html>
